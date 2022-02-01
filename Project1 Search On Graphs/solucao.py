@@ -138,7 +138,22 @@ def dfs(estado: str):
     :return:
     """
     # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
+    # substituir a linha abaixo pelo seu codigo
+    visitados = [ estado ]
+    fronteira = [ Nodo(estado, None, "", 0) ]
+    
+    while True:
+        if len(fronteira) == 0: return None
+
+        current_node = fronteira.pop(0)
+        
+        if current_node.is_objective():
+            return current_node.path_to_root()
+
+        for i in expande(current_node):
+            if i.estado not in visitados:
+                fronteira.insert(0, i)
+                visitados.append(i.estado)
 
 
 def astar_hamming(estado):
