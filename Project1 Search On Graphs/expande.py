@@ -1,16 +1,17 @@
-from node import Node
+from node import Nodo
 from sucessor import sucessor
-from state import State
 
-def expande(node):
+def expande(node: Nodo) -> list[Nodo]:
     children = []
 
-    for state in sucessor(node.state):
-        children.append(Node(
-            parent=node,
-            action=state[0],
-            cost=node.cost+1,
-            state=state[1],
-        ))
+    for state in sucessor(node.estado):
+        children.append(
+            Nodo(
+                parent=node,
+                action=state[0],
+                cost=node.custo + 1,
+                state=state[1],
+            )
+        )
 
     return children

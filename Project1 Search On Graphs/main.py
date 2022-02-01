@@ -1,13 +1,11 @@
-from state import State
 from sucessor import sucessor
 from expande import expande
-from node import Node
+from node import Nodo
+from bfs import bfs
+from dfs import dfs
 
-s = State("2_3541687")
+s = "123456_78"
 
-nodo = Node(s, None, None, 0)
+nodo = Nodo(s)
 
-print(nodo.state)
-
-for node in expande(nodo):
-    print(node)
+print(bfs(s))
