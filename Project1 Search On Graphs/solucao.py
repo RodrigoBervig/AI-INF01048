@@ -58,7 +58,7 @@ def sucessor(estado: str):
         reachable.append(("esquerda", transition(estado, "esquerda", index)))
 
     if index >= 3:
-        reachable.append(("cima", transition(estado, "cima", index)))
+        reachable.append(("acima", transition(estado, "acima", index)))
     
     if index <= 5:
         reachable.append(("abaixo", transition(estado, "abaixo", index)))
@@ -77,7 +77,7 @@ def transition(state: str, action: str, index: int):
         return (swap(state, index, index - 1))
     elif action == "direita":
         return (swap(state, index, index + 1))
-    elif action == "cima":
+    elif action == "acima":
         return (swap(state, index, index - 3))
     elif action == "abaixo":
         return (swap(state, index, index + 3))

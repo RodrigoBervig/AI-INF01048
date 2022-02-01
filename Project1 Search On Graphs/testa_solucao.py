@@ -16,7 +16,6 @@ class TestaSolucao(unittest.TestCase):
         self.assertEqual(3, len(sucessores))     # verifica se foram retornados 3 sucessores
         for s in sucessores:                     # verifica se os sucessores retornados estao entre os esperados
             self.assertIn(s, succ_esperados)
-        print('ok')
 
     def test_expande(self):
         """
@@ -35,7 +34,6 @@ class TestaSolucao(unittest.TestCase):
         for nodo in resposta:
             # verifica se a tupla com os atributos do nodo esta' presente no conjunto com os nodos esperados
             self.assertIn((nodo.estado, nodo.pai, nodo.acao, nodo.custo), resposta_esperada)
-        print('ok')
 
     def test_bfs(self):
         """
@@ -46,10 +44,8 @@ class TestaSolucao(unittest.TestCase):
         self.assertEqual(23, len(solucao.bfs("2_3541687")))
         print("Atencao! O BFS passar nesse teste apenas significa que a lista retornada tem o "
               "numero correto de elementos. Nao verificamos se as acoes levam para a solucao!")
-        print('ok')
         # nao ha solucao a partir do estado 185423_67
         self.assertIsNone(solucao.bfs("185423_67"))
-        print('ok')
 
     def test_astar_hamming(self):
         """
