@@ -216,7 +216,6 @@ def astar_hamming(estado):
 
     return astar(estado, hamming)
 
-
 def astar_manhattan(estado):
     """
     Recebe um estado (string), executa a busca A* com h(n) = soma das distâncias de Manhattan e
@@ -226,5 +225,26 @@ def astar_manhattan(estado):
     :param estado: str
     :return:
     """
+    def distManhattan(bloco,pos):
+        if(bloco == '_'):
+            x = ((pos-1)%3) + 1    #Posição horizontal do bloco
+            y = (pos-1)/3 + 1      #Posição vertical do bloco
+            return abs(x-3) + abs(y-3)
+        else:
+            bloco = int(bloco)
+            x = ((pos-1)%3) + 1    #Posição horizontal do bloco
+            y = (pos-1)/3 + 1      #Posição vertical do bloco
+            xx = ((bloco-1)%3) + 1 #Posição horizontal onde bloco deve estar
+            yy = (pos-1)/3 + 1     #Posição vertical onde bloco deve estar
+            return abs(x-xx) + abs(y-yy)
     # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
+    def manhattan(estado):
+        soma_dist = 0
+        for i in range(0, 8):
+            if estado[i] != str(i+1):
+                soma_dist += distManhattan(estado[i],i+1)
+
+        return soma_dist
+
+    return astar(estado, manhattan)
+
