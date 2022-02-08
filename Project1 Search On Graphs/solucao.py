@@ -1,7 +1,11 @@
+from heapq import heapify, heappush, heappop
+
+
 class Nodo:
     """
     Implemente a classe Nodo com os atributos descritos na funcao init
     """
+
     def __init__(self, estado, pai, acao, custo):
         """
         Inicializa o nodo com os atributos recebidos
@@ -22,7 +26,7 @@ class Nodo:
         while current.pai is not None:
             path.insert(0, current.acao)
             current = current.pai
-        
+
         return path
 
     def is_objective(self) -> bool:
@@ -53,24 +57,26 @@ def sucessor(estado: str):
 
     if index % 3 <= 1:
         reachable.append(("direita", transition(estado, "direita", index)))
-    
+
     if index % 3 >= 1:
         reachable.append(("esquerda", transition(estado, "esquerda", index)))
 
     if index >= 3:
         reachable.append(("acima", transition(estado, "acima", index)))
-    
+
     if index <= 5:
         reachable.append(("abaixo", transition(estado, "abaixo", index)))
 
     return reachable
 
+
 def swap(state: str, pos1: int, pos2: int):
-        new_state = list(state)
-        temp = new_state[pos1]
-        new_state[pos1] = new_state[pos2]
-        new_state[pos2] = temp
-        return "".join(new_state)
+    new_state = list(state)
+    temp = new_state[pos1]
+    new_state[pos1] = new_state[pos2]
+    new_state[pos2] = temp
+    return "".join(new_state)
+
 
 def transition(state: str, action: str, index: int):
     if action == "esquerda":
@@ -111,14 +117,15 @@ def bfs(estado: str) -> list[str]:
     :return:
     """
     # substituir a linha abaixo pelo seu codigo
-    visitados = { estado }
-    fronteira = [ Nodo(estado, None, "", 0) ]
-    
+    visitados = {estado}
+    fronteira = [Nodo(estado, None, "", 0)]
+
     while True:
-        if len(fronteira) == 0: return None
+        if len(fronteira) == 0:
+            return None
 
         current_node = fronteira.pop(0)
-        
+
         if current_node.is_objective():
             return current_node.path_to_root()
 
@@ -139,21 +146,37 @@ def dfs(estado: str):
     """
     # substituir a linha abaixo pelo seu codigo
     # substituir a linha abaixo pelo seu codigo
-    visitados = { estado }
-    fronteira = [ Nodo(estado, None, "", 0) ]
-    
+    visitados = {estado}
+    fronteira = [Nodo(estado, None, "", 0)]
+
     while True:
-        if len(fronteira) == 0: return None
+        if len(fronteira) == 0:
+            return None
 
         current_node = fronteira.pop(0)
-        
+
         if current_node.is_objective():
             return current_node.path_to_root()
 
         for i in expande(current_node):
             if i.estado not in visitados:
                 fronteira.insert(0, i)
-                visitados.append(i.estado)
+                visitados.add(i.estado)
+
+
+def astar(estado, heuristica):
+    """
+    Recebe um estado (string), executa a busca A* com h(n) = heuristica(n) e
+    retorna uma lista de ações que leva do
+    estado recebido até o objetivo ("12345678_").
+    Caso não haja solução a partir do estado recebido, retorna None
+    :param estado: str
+    :return:
+    """
+    visitados = {estado}
+    fronteira = []
+    heapify(fronteira)
+    fronteira.push(Nodo(estado, None, "", 0))
 
 
 def astar_hamming(estado):
