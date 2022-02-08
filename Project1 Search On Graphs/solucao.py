@@ -95,7 +95,7 @@ def expande(nodo):
 
     for state in sucessor(nodo.estado):
         children.append(
-            Nodo(state[1], nodo, state[0],nodo.custo + 1)
+            Nodo(state[1], nodo, state[0], nodo.custo + 1)
         )
 
     return children
@@ -111,7 +111,7 @@ def bfs(estado: str) -> list[str]:
     :return:
     """
     # substituir a linha abaixo pelo seu codigo
-    visitados = [ estado ]
+    visitados = { estado }
     fronteira = [ Nodo(estado, None, "", 0) ]
     
     while True:
@@ -125,7 +125,7 @@ def bfs(estado: str) -> list[str]:
         for i in expande(current_node):
             if i.estado not in visitados:
                 fronteira.append(i)
-                visitados.append(i.estado)
+                visitados.add(i.estado)
 
 
 def dfs(estado: str):
@@ -139,7 +139,7 @@ def dfs(estado: str):
     """
     # substituir a linha abaixo pelo seu codigo
     # substituir a linha abaixo pelo seu codigo
-    visitados = [ estado ]
+    visitados = { estado }
     fronteira = [ Nodo(estado, None, "", 0) ]
     
     while True:
