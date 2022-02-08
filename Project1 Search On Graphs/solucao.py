@@ -32,6 +32,9 @@ class Nodo:
     def is_objective(self) -> bool:
         return self.estado == "12345678_"
 
+    def __lt__(self, other):
+        return self.estado < other.estado
+
     def __str__(self) -> str:
         return "State: {}   Parent: {}   Action: {}   Cost: {}".format(self.estado, self.pai, self.acao, self.custo)
 
@@ -176,7 +179,21 @@ def astar(estado, heuristica):
     visitados = {estado}
     fronteira = []
     heapify(fronteira)
-    fronteira.push(Nodo(estado, None, "", 0))
+    heappush(fronteira, (0, Nodo(estado, None, "", 0)))
+
+    while True:
+        if len(fronteira) == 0:
+            return None
+
+        cost, current_node = heappop(fronteira)
+
+        if current_node.is_objective():
+            return current_node.path_to_root()
+
+        for i in expande(current_node):
+            if i.estado not in visitados:
+                heappush(fronteira, (cost + heuristica(i.estado), i))
+                visitados.add(i.estado)
 
 
 def astar_hamming(estado):
@@ -189,7 +206,15 @@ def astar_hamming(estado):
     :return:
     """
     # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
+    def hamming(estado):
+        fora_do_lugar = 0
+        for i in range(0, 8):
+            if estado[i] != str(i+1):
+                fora_do_lugar += 1
+
+        return fora_do_lugar
+
+    return astar(estado, hamming)
 
 
 def astar_manhattan(estado):
