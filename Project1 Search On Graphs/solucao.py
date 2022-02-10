@@ -6,7 +6,7 @@ class Nodo:
     Implemente a classe Nodo com os atributos descritos na funcao init
     """
 
-    def __init__(self, estado, pai, acao, custo):
+    def __init__(self, estado, pai, acao, custo, custo_f=0):
         """
         Inicializa o nodo com os atributos recebidos
         :param estado:str, representacao do estado do 8-puzzle
@@ -19,6 +19,7 @@ class Nodo:
         self.pai = pai
         self.acao = acao
         self.custo = custo
+        self.custo_f = custo_f
 
     def path_to_root(self) -> list[str]:
         path = []
@@ -33,7 +34,9 @@ class Nodo:
         return self.estado == "12345678_"
 
     def __lt__(self, other):
-        return self.estado < other.estado
+        if self.custo_f == other.custo_f:
+            return self.estado < other.estado
+        return self.custo_f < other.custo_f
 
     def __str__(self) -> str:
         return "State: {}   Parent: {}   Action: {}   Cost: {}".format(self.estado, self.pai, self.acao, self.custo)
@@ -179,20 +182,21 @@ def astar(estado, heuristica):
     visitados = {estado}
     fronteira = []
     heapify(fronteira)
-    heappush(fronteira, (0, Nodo(estado, None, "", 0)))
+    heappush(fronteira, Nodo(estado, None, "", 0))
 
     while True:
         if len(fronteira) == 0:
             return None
 
-        cost, current_node = heappop(fronteira)
+        current_node = heappop(fronteira)
 
         if current_node.is_objective():
             return current_node.path_to_root()
 
         for i in expande(current_node):
             if i.estado not in visitados:
-                heappush(fronteira, (cost + heuristica(i.estado), i))
+                i.custo_f = i.custo + heuristica(i.estado)
+                heappush(fronteira, i)
                 visitados.add(i.estado)
 
 
@@ -208,13 +212,14 @@ def astar_hamming(estado):
     # substituir a linha abaixo pelo seu codigo
     def hamming(estado):
         fora_do_lugar = 0
-        for i in range(0, 8):
-            if estado[i] != str(i+1):
+        for i in range(0, 9):
+            if estado[i] != '_' and estado[i] != str(i+1):
                 fora_do_lugar += 1
 
         return fora_do_lugar
 
     return astar(estado, hamming)
+
 
 def astar_manhattan(estado):
     """
@@ -225,26 +230,27 @@ def astar_manhattan(estado):
     :param estado: str
     :return:
     """
-    def distManhattan(bloco,pos):
+    def distManhattan(bloco, pos):
         if(bloco == '_'):
-            x = ((pos-1)%3) + 1    #Posição horizontal do bloco
-            y = (pos-1)/3 + 1      #Posição vertical do bloco
+            x = ((pos-1) % 3) + 1  # Posição horizontal do bloco
+            y = (pos-1)/3 + 1  # Posição vertical do bloco
             return abs(x-3) + abs(y-3)
         else:
             bloco = int(bloco)
-            x = ((pos-1)%3) + 1    #Posição horizontal do bloco
-            y = (pos-1)/3 + 1      #Posição vertical do bloco
-            xx = ((bloco-1)%3) + 1 #Posição horizontal onde bloco deve estar
-            yy = (pos-1)/3 + 1     #Posição vertical onde bloco deve estar
+            x = ((pos-1) % 3) + 1  # Posição horizontal do bloco
+            y = (pos-1)/3 + 1  # Posição vertical do bloco
+            # Posição horizontal onde bloco deve estar
+            xx = ((bloco-1) % 3) + 1
+            yy = (pos-1)/3 + 1  # Posição vertical onde bloco deve estar
             return abs(x-xx) + abs(y-yy)
     # substituir a linha abaixo pelo seu codigo
+
     def manhattan(estado):
         soma_dist = 0
         for i in range(0, 8):
             if estado[i] != str(i+1):
-                soma_dist += distManhattan(estado[i],i+1)
+                soma_dist += distManhattan(estado[i], i+1)
 
         return soma_dist
 
     return astar(estado, manhattan)
-
