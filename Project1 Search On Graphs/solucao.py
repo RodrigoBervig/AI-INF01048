@@ -1,4 +1,5 @@
 from heapq import heapify, heappush, heappop
+import math
 
 
 class Nodo:
@@ -182,21 +183,21 @@ def astar(estado, heuristica):
     visitados = {estado}
     fronteira = []
     heapify(fronteira)
-    heappush(fronteira, Nodo(estado, None, "", 0))
+    heappush(fronteira, (0,Nodo(estado, None, "", 0)))
 
     while True:
         if len(fronteira) == 0:
             return None
 
-        current_node = heappop(fronteira)
+        cost,current_node = heappop(fronteira)
 
         if current_node.is_objective():
             return current_node.path_to_root()
 
         for i in expande(current_node):
             if i.estado not in visitados:
-                i.custo_f = i.custo + heuristica(i.estado)
-                heappush(fronteira, i)
+#                i.custo_f = i.custo + heuristica(i.estado)
+                heappush(fronteira, (i.custo+cost + heuristica(i.estado),i))
                 visitados.add(i.estado)
 
 
@@ -235,17 +236,47 @@ def astar_manhattan(estado):
     def distManhattan(bloco,pos):
         bloco = int(bloco)
         x = ((pos-1)%3) + 1    #Posição horizontal do bloco
-        y = (pos-1)/3 + 1      #Posição vertical do bloco
+        y = int((pos-1)/3) + 1      #Posição vertical do bloco
         xx = ((bloco-1)%3) + 1 #Posição horizontal onde bloco deve estar
-        yy = (bloco-1)/3 + 1     #Posição vertical onde bloco deve estar
+        yy = int((bloco-1)/3) + 1     #Posição vertical onde bloco deve estar
         return abs(x-xx) + abs(y-yy)
 
     def manhattan(estado):
         soma_dist = 0
         for i in range(0, 9): #Checa todas posições
-            if estado[i] != str(i+1) and estado[i] != '_': #Ignora o bloco _
+            if estado[i] != '_' and estado[i] != str(i+1): #Ignora o bloco _
                 soma_dist += distManhattan(estado[i],i+1)
 
         return soma_dist
 
     return astar(estado, manhattan)
+"""
+if __name__ == "__main__":
+    print("BFS: ", "Estado: 1234675_8 ", "R: ",len(bfs("1234675_8")))
+    print("Manhattan: ", "Estado: 1234675_8 ", "R: ",len(astar_manhattan("1234675_8")))
+    print("Hamming: ", "Estado: 1234675_8 ", "R: ",len(astar_hamming("1234675_8")))
+    print()
+    print("BFS: ", "Estado: 123467_58 ", "R: ",len(bfs("123467_58")))
+    print("Manhattan: ", "Estado: 1234675_8 ", "R: ",len(astar_manhattan("123467_58")))
+    print("Hamming: ", "Estado: 1234675_8 ", "R: ",len(astar_hamming("123467_58")))
+    print()
+    print("BFS: ", "Estado: 123465_87 ", "R: ",len(bfs("123465_87")))
+    print("Manhattan: ", "Estado: 123465_87 ", "R: ",len(astar_manhattan("123465_87")))
+    print("Hamming: ", "Estado: 123465_87 ", "R: ",len(astar_hamming("123465_87")))
+    print()
+    print("BFS: ", "Estado: 123_78564 ", "R: ",len(bfs("123_78564")))
+    print("Manhattan: ", "Estado: 123_78564 ", "R: ",len(astar_manhattan("123_78564")))
+    print("Hamming: ", "Estado: 123_78564 ", "R: ",len(astar_hamming("123_78564")))
+    print()
+    print("BFS: ", "Estado: 123_75684 ", "R: ",len(bfs("123_75684")))
+    print("Manhattan: ", "Estado: 123_75684 ", "R: ",len(astar_manhattan("123_75684")))
+    print("Hamming: ", "Estado: 123_75684 ", "R: ",len(astar_hamming("123_75684")))
+    print()
+    print("BFS: ", "Estado: 123_54687 ", "R: ",len(bfs("123_54687")))
+    print("Manhattan: ", "Estado: 123_54687 ", "R: ",len(astar_manhattan("123_54687")))
+    print("Hamming: ", "Estado: 123_54687 ", "R: ",len(astar_hamming("123_54687")))
+    print()
+    print("BFS: ", "Estado: 123_58674 ", "R: ",len(bfs("123_58674")))
+    print("Manhattan: ", "Estado: 123_58674 ", "R: ",len(astar_manhattan("123_58674")))
+    print("Hamming: ", "Estado: 123_58674 ", "R: ",len(astar_hamming("123_58674")))
+"""
