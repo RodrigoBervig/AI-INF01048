@@ -10,10 +10,10 @@
 
 ## Estado Inicial: 2_3541687
 
-1. DFS:        Custo: 55003, Tempo Decorrido: 1.91s, Nós Expandidos: 102036
+1. DFS:        Custo: 55003, Tempo Decorrido: 1.87s, Nós Expandidos: 102036
 
-2. BFS:        Custo: 23,    Tempo Decorrido: 0.93s, Nós Expandidos: 132464
+2. BFS:        Custo: 23,    Tempo Decorrido: 0.94s, Nós Expandidos: 132464
 
-3. A* Hamming:    Custo: 23,    Tempo Decorrido: 1.06s, Nós Expandidos: 101502
+3. A* Hamming:    Custo: 23,    Tempo Decorrido: 1.04s, Nós Expandidos: 101502
 
-4. A* Manhattan:  Custo: 23,    Tempo Decorrido 0.89s,  Nós Expandidos: 60967
+4. A* Manhattan:  Custo: 23,    Tempo Decorrido 0.83s,  Nós Expandidos: 60967
