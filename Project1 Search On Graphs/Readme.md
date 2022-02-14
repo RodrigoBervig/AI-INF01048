@@ -1,5 +1,7 @@
 Nome: Fernando Zanutto			      Cartão:	00302340		Turma: A
+
 Nome: Gabriel Fagundes da Fonseca	Cartão: 00301151		Turma: A
+
 Nome: Rodrigo Bervig Rocha		    Cartão:	00301709		Turma: A
 
 Estado Inicial: 2_3541687
