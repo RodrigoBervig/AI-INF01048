@@ -2,7 +2,7 @@ import unittest
 
 import advsearch.othello.board as board
 import advsearch.timer as timer
-import advsearch.your_agent.agent as agent  # change your_agent by the name of your agent module
+import advsearch.r2d2.agent as agent  # change your_agent by the name of your agent module
 
 
 class TestAgent(unittest.TestCase):

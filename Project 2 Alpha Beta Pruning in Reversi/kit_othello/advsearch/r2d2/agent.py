@@ -15,11 +15,20 @@ def make_move(board: board.Board, color) -> tuple[int, int]:
     global INITIAL_TIME
     INITIAL_TIME = time()
     
-    #print(len(board.legal_moves(color)))
-    return get_best_move(board, color)
+    # print(board.legal_moves(color))
+    possible_moves = board.legal_moves(color)
+
+    return get_best_move(board.__str__(), possible_moves, color)
 
 def heuristic(board: board.Board, agent_color: str) -> int:
     points = get_points(board, agent_color)
+
+    if board.is_terminal_state():
+        if points[0] > points[1]:
+            return inf
+        elif points[0] < points[1]:
+            return -inf
+    
     return points[0] - points[1]
 
 def get_points(board: board.Board, agent_color: str) -> tuple[int, int]:
@@ -33,9 +42,7 @@ def get_points(board: board.Board, agent_color: str) -> tuple[int, int]:
     return (p1_score, p2_score)
 
 
-def get_best_move(game_board: board.Board, agent_color) -> tuple[int,int]:
-    cur_state = game_board.__str__()
-    possible_moves = game_board.legal_moves(agent_color)
+def get_best_move(cur_state: str, possible_moves, agent_color) -> tuple[int,int]:
     best_move = (-1,-1)
     best_value = -inf
 
@@ -62,10 +69,18 @@ def get_max_value(cur_state: str, alpha, beta, agent_color, cur_depth) -> int:
         return heuristic(cur_board, agent_color)
 
     v = -inf
-    for move in cur_board.legal_moves(agent_color):
+    legal_moves = cur_board.legal_moves(agent_color)
+
+    if len(legal_moves) == 0:
+        if cur_board.is_terminal_state():
+            return heuristic(cur_board, agent_color)
+        else:
+            return get_min_value(cur_board.__str__(), alpha, beta, cur_board.opponent(agent_color), cur_depth + 1)
+
+    for move in legal_moves:
         move_board = board.from_string(cur_state)
         move_board.process_move(move, agent_color)
-        v = min(v, get_min_value(move_board.__str__(), alpha, beta, move_board.opponent(agent_color), cur_depth + 1))
+        v = max(v, get_min_value(move_board.__str__(), alpha, beta, move_board.opponent(agent_color), cur_depth + 1))
         alpha = max(alpha, v)
         if alpha >= beta:
             break
@@ -77,13 +92,21 @@ def get_min_value(state: str, alpha, beta, agent_color, cur_depth) -> int:
     cur_board = board.from_string(state)
 
     if cur_depth >= MAX_DEPTH or time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
-        return heuristic(cur_board, agent_color)
+        return heuristic(cur_board, cur_board.opponent(agent_color))
+
+    legal_moves = cur_board.legal_moves(agent_color)
+    if len(legal_moves) == 0:
+        if cur_board.is_terminal_state():
+            return heuristic(cur_board, cur_board.opponent(agent_color))
+        else:
+            return get_max_value(cur_board.__str__(), alpha, beta, cur_board.opponent(agent_color), cur_depth + 1)
+
 
     v = inf
-    for move in cur_board.legal_moves(agent_color):
+    for move in legal_moves:
         move_board = board.from_string(state)
         move_board.process_move(move, agent_color)
-        v = max(v, get_max_value(move_board.__str__(), alpha, beta, move_board.opponent(agent_color), cur_depth + 1))
+        v = min(v, get_max_value(move_board.__str__(), alpha, beta, move_board.opponent(agent_color), cur_depth + 1))
 
         beta = min(beta, v)
         if beta <= alpha: 
