@@ -4,7 +4,7 @@ from ..othello import board
 from time import time
 
 INITIAL_TIME = 0.0
-MAX_TIME_IN_SECONDS = 4.95
+MAX_TIME_IN_SECONDS = 4.98
 MAX_DEPTH = 8
 
 
@@ -19,7 +19,7 @@ def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
     INITIAL_TIME = time()
     
     # print(board.legal_moves(color))
-    possible_moves: list[tuple[int,int]] = get_ordered_possible_moves(board.legal_moves(agent_color))
+    possible_moves: list[tuple[int,int]] = get_ordered_possible_moves(board, agent_color)
     best_move = get_best_move(board.__str__(), possible_moves, agent_color)
     print(time() - INITIAL_TIME)
     return best_move
