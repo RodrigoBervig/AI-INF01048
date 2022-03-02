@@ -1,13 +1,5 @@
 from math import inf
-from pickle import BINPERSID
-import random
-import sys
 from ..othello import board
-# Voce pode criar funcoes auxiliares neste arquivo
-# e tambem modulos auxiliares neste pacote.
-#
-# Nao esqueca de renomear 'your_agent' com o nome
-# do seu agente.
 
 
 def make_move(board: board.Board, color) -> tuple[int, int]:
@@ -19,11 +11,8 @@ def make_move(board: board.Board, color) -> tuple[int, int]:
     """
 
     MAX_DEPTH = 5
-
-    move_to_make = get_max_value(board.__str__(), -inf, inf, MAX_DEPTH, 0, color)[1]
-
-    return move_to_make
-
+    print(len(board.legal_moves(color)))
+    return get_best_move(board, MAX_DEPTH, color)
 
 def heuristic(board: board.Board, agent_color: str) -> int:
     points = get_points(board, agent_color)
@@ -40,63 +29,60 @@ def get_points(board: board.Board, agent_color: str) -> tuple[int, int]:
     return (p1_score, p2_score)
 
 
-def get_max_value(state: str, alpha, beta, max_depth, cur_depth, agent_color) -> tuple[int, tuple[int,int]]:
-    cur_board: board.Board = board.from_string(state)
+def get_best_move(game_board: board.Board, max_depth, agent_color) -> tuple[int,int]:
+    cur_state = game_board.__str__()
+    possible_moves = game_board.legal_moves(agent_color)
+    best_move = (-1,-1)
+    best_value = -inf
 
-    if cur_depth == max_depth: 
-        return (heuristic(cur_board, agent_color), (-1,-1))
-
-    v = -inf
-    best_move = (-1, -1)
-    for move in cur_board.legal_moves(agent_color):
-        move_board: board.Board = board.from_string(state)
+    alpha = -inf
+    beta = inf
+    for move in possible_moves:
+        move_board = board.from_string(cur_state)
         move_board.process_move(move, agent_color)
-        move_value = get_min_value(move_board.__str__(), alpha, beta, max_depth, cur_depth + 1, move_board.opponent(agent_color))[0]
-        if move_value > v:
-            v = move_value
+        move_value = get_min_value(move_board.__str__(), alpha, beta, max_depth, 1, move_board.opponent(agent_color))
+        if move_value > best_value:
+            best_value = move_value
             best_move = move
 
+        alpha = max(alpha, best_value)
+        if alpha >= beta:
+            break
+
+    return best_move
+
+def get_max_value(cur_state: str, alpha, beta, max_depth, cur_depth, agent_color) -> int:
+    cur_board = board.from_string(cur_state)
+
+    if cur_depth == max_depth: 
+        return heuristic(cur_board, agent_color)
+
+    v = -inf
+    for move in cur_board.legal_moves(agent_color):
+        move_board = board.from_string(cur_state)
+        move_board.process_move(move, agent_color)
+        v = min(v, get_min_value(move_board.__str__(), alpha, beta, max_depth, cur_depth + 1, move_board.opponent(agent_color)))
         alpha = max(alpha, v)
         if alpha >= beta:
             break
 
-    return (v, best_move)
+    return v
 
 
-def get_min_value(state: str, alpha, beta, max_depth, cur_depth, agent_color) -> tuple[int, tuple[int,int]]:
-    cur_board: board.Board = board.from_string(state)
+def get_min_value(state: str, alpha, beta, max_depth, cur_depth, agent_color) -> int:
+    cur_board = board.from_string(state)
 
     if cur_depth == max_depth: 
-        return (heuristic(cur_board, agent_color), (-1,-1))
+        return heuristic(cur_board, agent_color)
 
     v = inf
-    best_move = (-1, -1)
     for move in cur_board.legal_moves(agent_color):
-        move_board: board.Board = board.from_string(state)
+        move_board = board.from_string(state)
         move_board.process_move(move, agent_color)
-        move_value = get_max_value(move_board.__str__(), alpha, beta, max_depth, cur_depth + 1, move_board.opponent(agent_color))[0]
-        if move_value < v:
-            v = move_value
-            best_move = move
+        v = max(v, get_max_value(move_board.__str__(), alpha, beta, max_depth, cur_depth + 1, move_board.opponent(agent_color)))
 
         beta = min(beta, v)
         if beta <= alpha: 
             break
 
-    return (v, best_move)
-
-
-if __name__ == '__main__':
-    b = board.from_string("""BBBBBBBB
-BBBBBBBB
-BWBWWBBW
-BWWWWWWW
-BWBBBBW.
-BBBWBWW.
-BBWBBWWB
-BBBBBW..""")
-    move = make_move(b, 'B')
-    print(f'A random move for black in the initial state: {move}')
-    print('Resulting state:')
-    b.process_move(move, 'B')
-    b.print_board()
+    return v
