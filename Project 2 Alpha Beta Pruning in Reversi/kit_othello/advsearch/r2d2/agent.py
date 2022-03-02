@@ -5,6 +5,8 @@ from time import time
 INITIAL_TIME = 0.0
 MAX_TIME_IN_SECONDS = 4.5
 MAX_DEPTH = 8
+
+
 def make_move(board: board.Board, color) -> tuple[int, int]:
     """
     Returns an Othello move
@@ -16,7 +18,7 @@ def make_move(board: board.Board, color) -> tuple[int, int]:
     INITIAL_TIME = time()
     
     # print(board.legal_moves(color))
-    possible_moves = board.legal_moves(color)
+    possible_moves: list[tuple[int,int]] = board.legal_moves(color)
 
     return get_best_move(board.__str__(), possible_moves, color)
 
@@ -35,14 +37,14 @@ def get_points(board: board.Board, agent_color: str) -> tuple[int, int]:
     """
     Returns a tuple (a,b) where a is the agent's points, and b is the opponent's points
     """
-    oponent_color = 'B' if agent_color == 'W' else 'W'
+    oponent_color = board.opponent(agent_color)
     p1_score = sum([1 for char in str(board) if char == agent_color])
     p2_score = sum([1 for char in str(board) if char == oponent_color])
 
     return (p1_score, p2_score)
 
 
-def get_best_move(cur_state: str, possible_moves, agent_color) -> tuple[int,int]:
+def get_best_move(cur_state: str, possible_moves: list[tuple[int,int]], agent_color: str) -> tuple[int,int]:
     best_move = (-1,-1)
     best_value = -inf
 
@@ -62,7 +64,7 @@ def get_best_move(cur_state: str, possible_moves, agent_color) -> tuple[int,int]
 
     return best_move
 
-def get_max_value(cur_state: str, alpha, beta, agent_color, cur_depth) -> int:
+def get_max_value(cur_state: str, alpha: float, beta: float, agent_color: str, cur_depth: int) -> int:
     cur_board = board.from_string(cur_state)
 
     if cur_depth >= MAX_DEPTH or time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
@@ -71,16 +73,18 @@ def get_max_value(cur_state: str, alpha, beta, agent_color, cur_depth) -> int:
     v = -inf
     legal_moves = cur_board.legal_moves(agent_color)
 
+    opponent = cur_board.opponent(agent_color)
+
     if len(legal_moves) == 0:
         if cur_board.is_terminal_state():
             return heuristic(cur_board, agent_color)
         else:
-            return get_min_value(cur_board.__str__(), alpha, beta, cur_board.opponent(agent_color), cur_depth + 1)
+            return get_min_value(cur_state, alpha, beta, opponent, cur_depth + 1)
 
     for move in legal_moves:
         move_board = board.from_string(cur_state)
         move_board.process_move(move, agent_color)
-        v = max(v, get_min_value(move_board.__str__(), alpha, beta, move_board.opponent(agent_color), cur_depth + 1))
+        v = max(v, get_min_value(move_board.__str__(), alpha, beta, opponent, cur_depth + 1))
         alpha = max(alpha, v)
         if alpha >= beta:
             break
@@ -88,25 +92,27 @@ def get_max_value(cur_state: str, alpha, beta, agent_color, cur_depth) -> int:
     return v
 
 
-def get_min_value(state: str, alpha, beta, agent_color, cur_depth) -> int:
-    cur_board = board.from_string(state)
+def get_min_value(cur_state: str, alpha: float, beta: float, opponent_color: str, cur_depth: int) -> int:
+    cur_board = board.from_string(cur_state)
+
+    agent_color = cur_board.opponent(opponent_color)
 
     if cur_depth >= MAX_DEPTH or time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
-        return heuristic(cur_board, cur_board.opponent(agent_color))
+        return heuristic(cur_board, agent_color)
 
-    legal_moves = cur_board.legal_moves(agent_color)
+    legal_moves = cur_board.legal_moves(opponent_color)
+
     if len(legal_moves) == 0:
         if cur_board.is_terminal_state():
-            return heuristic(cur_board, cur_board.opponent(agent_color))
+            return heuristic(cur_board, agent_color)
         else:
-            return get_max_value(cur_board.__str__(), alpha, beta, cur_board.opponent(agent_color), cur_depth + 1)
-
+            return get_max_value(cur_state, alpha, beta, agent_color, cur_depth + 1)
 
     v = inf
     for move in legal_moves:
-        move_board = board.from_string(state)
-        move_board.process_move(move, agent_color)
-        v = min(v, get_max_value(move_board.__str__(), alpha, beta, move_board.opponent(agent_color), cur_depth + 1))
+        move_board = board.from_string(cur_state)
+        move_board.process_move(move, opponent_color)
+        v = min(v, get_max_value(move_board.__str__(), alpha, beta, agent_color, cur_depth + 1))
 
         beta = min(beta, v)
         if beta <= alpha: 
