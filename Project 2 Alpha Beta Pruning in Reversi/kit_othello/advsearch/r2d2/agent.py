@@ -1,13 +1,14 @@
 from math import inf
+import random
 from ..othello import board
 from time import time
 
 INITIAL_TIME = 0.0
-MAX_TIME_IN_SECONDS = 4.5
+MAX_TIME_IN_SECONDS = 4.95
 MAX_DEPTH = 8
 
 
-def make_move(board: board.Board, color) -> tuple[int, int]:
+def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
     """
     Returns an Othello move
     :param the_board: a board.Board object with the current game state
@@ -18,18 +19,25 @@ def make_move(board: board.Board, color) -> tuple[int, int]:
     INITIAL_TIME = time()
     
     # print(board.legal_moves(color))
-    possible_moves: list[tuple[int,int]] = board.legal_moves(color)
+    possible_moves: list[tuple[int,int]] = get_ordered_possible_moves(board.legal_moves(agent_color))
+    best_move = get_best_move(board.__str__(), possible_moves, agent_color)
+    print(time() - INITIAL_TIME)
+    return best_move
 
-    return get_best_move(board.__str__(), possible_moves, color)
+def get_ordered_possible_moves(board: board.Board, color: str) -> list[tuple[int,int]]:
+
+    ordered_moves = board.legal_moves(color)
+
+    return ordered_moves
 
 def heuristic(board: board.Board, agent_color: str) -> int:
     points = get_points(board, agent_color)
 
     if board.is_terminal_state():
         if points[0] > points[1]:
-            return inf
+            return inf # win
         elif points[0] < points[1]:
-            return -inf
+            return -inf # loss
     
     return points[0] - points[1]
 
@@ -61,6 +69,10 @@ def get_best_move(cur_state: str, possible_moves: list[tuple[int,int]], agent_co
         alpha = max(alpha, best_value)
         if alpha >= beta:
             break
+    
+    if best_value == -inf:
+        # if all moves are losing moves (it's impossible to win), choose a random move
+        best_move = random.choice(possible_moves)
 
     return best_move
 
@@ -71,15 +83,16 @@ def get_max_value(cur_state: str, alpha: float, beta: float, agent_color: str, c
         return heuristic(cur_board, agent_color)
 
     v = -inf
-    legal_moves = cur_board.legal_moves(agent_color)
+    legal_moves = get_ordered_possible_moves(cur_board, agent_color)
 
     opponent = cur_board.opponent(agent_color)
 
     if len(legal_moves) == 0:
         if cur_board.is_terminal_state():
+            # print('estado terminal max', heuristic(cur_board, agent_color))
             return heuristic(cur_board, agent_color)
         else:
-            return get_min_value(cur_state, alpha, beta, opponent, cur_depth + 1)
+            return get_min_value(cur_state, alpha, beta, opponent, cur_depth)
 
     for move in legal_moves:
         move_board = board.from_string(cur_state)
@@ -100,13 +113,14 @@ def get_min_value(cur_state: str, alpha: float, beta: float, opponent_color: str
     if cur_depth >= MAX_DEPTH or time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
         return heuristic(cur_board, agent_color)
 
-    legal_moves = cur_board.legal_moves(opponent_color)
+    legal_moves = get_ordered_possible_moves(cur_board, opponent_color)
 
     if len(legal_moves) == 0:
         if cur_board.is_terminal_state():
+            # print('estado terminal min', heuristic(cur_board, agent_color))
             return heuristic(cur_board, agent_color)
         else:
-            return get_max_value(cur_state, alpha, beta, agent_color, cur_depth + 1)
+            return get_max_value(cur_state, alpha, beta, agent_color, cur_depth)
 
     v = inf
     for move in legal_moves:
