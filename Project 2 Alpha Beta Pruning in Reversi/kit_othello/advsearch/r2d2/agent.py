@@ -62,6 +62,12 @@ def corner(board: board.Board, max_agent_color: str) -> int:
             (oponent_corners + agent_corners))
 
 
+def coin_parity(board: board.Board):
+    points1, points2 = get_points(board, 'W')
+    remaining = 64 - points1 - points2
+    return remaining % 2
+
+
 def heuristic(board: board.Board, agent_color: str) -> int:
     points = get_points(board, agent_color)
 
