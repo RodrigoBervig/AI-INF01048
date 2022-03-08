@@ -33,6 +33,18 @@ def get_ordered_possible_moves(board: board.Board,
 
     return ordered_moves
 
+def getMobility(board: board.Board, agent_color: str) -> int:
+
+    oponent_color = board.opponent(agent_color)
+    myMoves = len(board.legal_moves(agent_color))
+    oppMoves = len(board.legal_moves(oponent_color))
+
+    if myMoves + oppMoves != 0:
+        mobility = 100*(myMoves - oppMoves)/(myMoves + oppMoves)
+    else:
+        mobility = 0
+
+    return mobility
 
 def corner(board: board.Board, max_agent_color: str) -> int:
     oponent_color = board.opponent(max_agent_color)
