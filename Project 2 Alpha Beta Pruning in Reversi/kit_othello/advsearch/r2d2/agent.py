@@ -47,10 +47,10 @@ def heuristic(board: board.Board, agent_color: str) -> int:
     total_points = points[0] + points[1]
     if total_points <= 20:
         return 1000 * get_corner(board, agent_color) + 50 * get_mobility(board, agent_color)
-    elif total_points <= 55:
+    elif total_points <= 50:
         return 1000 * get_corner(board, agent_color) + 20 * get_mobility(board, agent_color) + 10 * get_coin_difference(board, agent_color)
-    
-    return 1000 * get_corner(board, agent_color) + 100 * get_mobility(board, agent_color) + 500 * get_coin_difference(board, agent_color)
+
+    return 1000 * get_corner(board, agent_color) + 100 * get_mobility(board, agent_color) + 500 * get_coin_difference(board, agent_color) + 500 * get_coin_parity(board)
 
 
 def get_best_move(cur_state: str, possible_moves: list[tuple[int, int]],
@@ -84,7 +84,7 @@ def get_max_value(cur_state: str, alpha: float, beta: float, agent_color: str,
                   cur_depth: int) -> int:
     cur_board = board.from_string(cur_state)
 
-    if time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
+    if cur_depth > MAX_DEPTH or time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
         return heuristic(cur_board, agent_color)
 
     v = -inf
@@ -119,7 +119,7 @@ def get_min_value(cur_state: str, alpha: float, beta: float,
 
     agent_color = cur_board.opponent(opponent_color)
 
-    if time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
+    if cur_depth > MAX_DEPTH or time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
         return heuristic(cur_board, agent_color)
 
     legal_moves = get_ordered_possible_moves(cur_board, opponent_color)

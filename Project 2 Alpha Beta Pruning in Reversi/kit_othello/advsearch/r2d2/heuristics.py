@@ -6,9 +6,9 @@ def get_corner(board: board.Board, agent_color: str) -> int:
     agent_corners = 0
     oponent_corners = 0
 
-    corners = [(0,0), (7,7), (7,0), (0,7)]
+    corners = [(0, 0), (7, 7), (7, 0), (0, 7)]
 
-    for c1,c2 in corners:
+    for c1, c2 in corners:
         agent_corners += board.tiles[c1][c2] == agent_color
         oponent_corners += board.tiles[c1][c2] == oponent_color
 
@@ -49,3 +49,7 @@ def get_coin_difference(board: board.Board, agent_color: str):
         return 0
     return 100 * (player_points - opponent_points)/(player_points + opponent_points)
 
+
+def get_coin_parity(board: board.Board):
+    p1, p2 = get_points(board, 'W')
+    return 1 if (64 - (p1 + p2)) % 2 == 0 else -1
