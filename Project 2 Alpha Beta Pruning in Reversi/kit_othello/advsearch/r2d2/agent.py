@@ -2,9 +2,10 @@ from math import inf
 import random
 from ..othello import board
 from time import time
+from .heuristics import *
 
 INITIAL_TIME = 0.0
-MAX_TIME_IN_SECONDS = 4.98
+MAX_TIME_IN_SECONDS = 4.8
 MAX_DEPTH = 8
 
 
@@ -33,52 +34,6 @@ def get_ordered_possible_moves(board: board.Board,
 
     return ordered_moves
 
-def getMobility(board: board.Board, agent_color: str) -> int:
-
-    oponent_color = board.opponent(agent_color)
-    myMoves = len(board.legal_moves(agent_color))
-    oppMoves = len(board.legal_moves(oponent_color))
-
-    if myMoves + oppMoves != 0:
-        mobility = 100*(myMoves - oppMoves)/(myMoves + oppMoves)
-    else:
-        mobility = 0
-
-    return mobility
-
-def corner(board: board.Board, max_agent_color: str) -> int:
-    oponent_color = board.opponent(max_agent_color)
-    agent_corners = 0
-    oponent_corners = 0
-
-    if board[0][0] == max_agent_color:
-        agent_corners += 1
-    if board[7][0] == max_agent_color:
-        agent_corners += 1
-    if board[0][7] == max_agent_color:
-        agent_corners += 1
-    if board[7][7] == max_agent_color:
-        agent_corners += 1
-
-    if board[0][0] == oponent_color:
-        oponent_corners += 1
-    if board[7][0] == oponent_color:
-        oponent_corners += 1
-    if board[0][7] == oponent_color:
-        oponent_corners += 1
-    if board[7][7] == oponent_color:
-        oponent_corners += 1
-
-    return (0 if oponent_corners + agent_corners == 0 else
-            (agent_corners - oponent_corners) /
-            (oponent_corners + agent_corners))
-
-
-def coin_parity(board: board.Board):
-    points1, points2 = get_points(board, 'W')
-    remaining = 64 - points1 - points2
-    return remaining % 2
-
 
 def heuristic(board: board.Board, agent_color: str) -> int:
     points = get_points(board, agent_color)
@@ -89,18 +44,13 @@ def heuristic(board: board.Board, agent_color: str) -> int:
         elif points[0] < points[1]:
             return -inf  # loss
 
-    return points[0] - points[1]
-
-
-def get_points(board: board.Board, agent_color: str) -> tuple[int, int]:
-    """
-    Returns a tuple (a,b) where a is the agent's points, and b is the opponent's points
-    """
-    oponent_color = board.opponent(agent_color)
-    p1_score = sum([1 for char in str(board) if char == agent_color])
-    p2_score = sum([1 for char in str(board) if char == oponent_color])
-
-    return (p1_score, p2_score)
+    total_points = points[0] + points[1]
+    if total_points <= 20:
+        return 1000 * get_corner(board, agent_color) + 50 * get_mobility(board, agent_color)
+    elif total_points <= 55:
+        return 1000 * get_corner(board, agent_color) + 20 * get_mobility(board, agent_color) + 10 * get_coin_difference(board, agent_color)
+    
+    return 1000 * get_corner(board, agent_color) + 100 * get_mobility(board, agent_color) + 500 * get_coin_difference(board, agent_color)
 
 
 def get_best_move(cur_state: str, possible_moves: list[tuple[int, int]],
@@ -170,7 +120,8 @@ def get_min_value(cur_state: str, alpha: float, beta: float,
     agent_color = cur_board.opponent(opponent_color)
 
     if cur_depth >= MAX_DEPTH or time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
-        return heuristic(cur_board, agent_color)
+        # pass oponent color here, since the opponent is trying to minimize our score
+        return heuristic(cur_board, cur_board.opponent(agent_color))
 
     legal_moves = get_ordered_possible_moves(cur_board, opponent_color)
 

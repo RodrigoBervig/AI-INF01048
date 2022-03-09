@@ -1,0 +1,63 @@
+from ..othello import board
+
+
+def get_corner(board: board.Board, agent_color: str) -> int:
+    oponent_color = board.opponent(agent_color)
+    agent_corners = 0
+    oponent_corners = 0
+
+    if board.tiles[0][0] == agent_color:
+        agent_corners += 1
+    if board.tiles[7][0] == agent_color:
+        agent_corners += 1
+    if board.tiles[0][7] == agent_color:
+        agent_corners += 1
+    if board.tiles[7][7] == agent_color:
+        agent_corners += 1
+
+    if board.tiles[0][0] == oponent_color:
+        oponent_corners += 1
+    if board.tiles[7][0] == oponent_color:
+        oponent_corners += 1
+    if board.tiles[0][7] == oponent_color:
+        oponent_corners += 1
+    if board.tiles[7][7] == oponent_color:
+        oponent_corners += 1
+
+    return (0 if oponent_corners + agent_corners == 0 else
+            (agent_corners - oponent_corners) /
+            (oponent_corners + agent_corners))
+
+
+def get_mobility(board: board.Board, agent_color: str) -> int:
+
+    oponent_color = board.opponent(agent_color)
+    myMoves = len(board.legal_moves(agent_color))
+    oppMoves = len(board.legal_moves(oponent_color))
+
+    if myMoves + oppMoves != 0:
+        mobility = 100*(myMoves - oppMoves)/(myMoves + oppMoves)
+    else:
+        mobility = 0
+
+    return mobility
+
+
+def get_points(board: board.Board, agent_color: str) -> tuple[int, int]:
+    """
+    Returns a tuple (a,b) where a is the agent's points, and b is the opponent's points
+    """
+    oponent_color = board.opponent(agent_color)
+    p1_score = sum([1 for char in str(board) if char == agent_color])
+    p2_score = sum([1 for char in str(board) if char == oponent_color])
+
+    return (p1_score, p2_score)
+
+
+def get_coin_difference(board: board.Board, agent_color: str):
+    player_points, opponent_points = get_points(board, agent_color)
+
+    if player_points + opponent_points == 0:
+        return 0
+    return 100 * (player_points - opponent_points)/(player_points + opponent_points)
+
