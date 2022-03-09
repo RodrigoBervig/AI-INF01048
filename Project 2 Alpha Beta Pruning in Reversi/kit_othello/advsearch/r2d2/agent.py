@@ -1,5 +1,6 @@
 from math import inf
 import random
+from turtle import pos
 from ..othello import board
 from time import time
 from .heuristics import *
@@ -23,7 +24,7 @@ def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
     possible_moves: list[tuple[int, int]] = get_ordered_possible_moves(
         board, agent_color)
     best_move = get_best_move(board.__str__(), possible_moves, agent_color)
-    print(time() - INITIAL_TIME)
+    #print(time() - INITIAL_TIME)
     return best_move
 
 
@@ -47,7 +48,7 @@ def heuristic(board: board.Board, agent_color: str) -> int:
     total_points = points[0] + points[1]
     if total_points <= 20:
         return 1000 * get_corner(board, agent_color) + 50 * get_mobility(board, agent_color)
-    elif total_points <= 50:
+    elif total_points <= 55:
         return 1000 * get_corner(board, agent_color) + 20 * get_mobility(board, agent_color) + 10 * get_coin_difference(board, agent_color)
 
     return 1000 * get_corner(board, agent_color) + 100 * get_mobility(board, agent_color) + 500 * get_coin_difference(board, agent_color) + 500 * get_coin_parity(board)
@@ -60,6 +61,13 @@ def get_best_move(cur_state: str, possible_moves: list[tuple[int, int]],
 
     alpha = -inf
     beta = inf
+
+    # killer move: always grab the corner:
+    for move in possible_moves:
+        if move == (0, 0) or move == (0,7) or move == (7,0) or move == (7,7):
+            #print("KILLER MOVE!!!!!!")
+            return move
+
     for move in possible_moves:
         move_board = board.from_string(cur_state)
         move_board.process_move(move, agent_color)
