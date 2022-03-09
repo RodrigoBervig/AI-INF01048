@@ -5,7 +5,7 @@ from time import time
 from .heuristics import *
 
 INITIAL_TIME = 0.0
-MAX_TIME_IN_SECONDS = 4.8
+MAX_TIME_IN_SECONDS = 4.5
 MAX_DEPTH = 8
 
 
@@ -84,7 +84,7 @@ def get_max_value(cur_state: str, alpha: float, beta: float, agent_color: str,
                   cur_depth: int) -> int:
     cur_board = board.from_string(cur_state)
 
-    if cur_depth >= MAX_DEPTH or time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
+    if time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
         return heuristic(cur_board, agent_color)
 
     v = -inf
@@ -119,9 +119,8 @@ def get_min_value(cur_state: str, alpha: float, beta: float,
 
     agent_color = cur_board.opponent(opponent_color)
 
-    if cur_depth >= MAX_DEPTH or time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
-        # pass oponent color here, since the opponent is trying to minimize our score
-        return heuristic(cur_board, cur_board.opponent(agent_color))
+    if time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
+        return heuristic(cur_board, agent_color)
 
     legal_moves = get_ordered_possible_moves(cur_board, opponent_color)
 

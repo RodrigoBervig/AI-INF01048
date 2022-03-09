@@ -6,26 +6,14 @@ def get_corner(board: board.Board, agent_color: str) -> int:
     agent_corners = 0
     oponent_corners = 0
 
-    if board.tiles[0][0] == agent_color:
-        agent_corners += 1
-    if board.tiles[7][0] == agent_color:
-        agent_corners += 1
-    if board.tiles[0][7] == agent_color:
-        agent_corners += 1
-    if board.tiles[7][7] == agent_color:
-        agent_corners += 1
+    corners = [(0,0), (7,7), (7,0), (0,7)]
 
-    if board.tiles[0][0] == oponent_color:
-        oponent_corners += 1
-    if board.tiles[7][0] == oponent_color:
-        oponent_corners += 1
-    if board.tiles[0][7] == oponent_color:
-        oponent_corners += 1
-    if board.tiles[7][7] == oponent_color:
-        oponent_corners += 1
+    for c1,c2 in corners:
+        agent_corners += board.tiles[c1][c2] == agent_color
+        oponent_corners += board.tiles[c1][c2] == oponent_color
 
     return (0 if oponent_corners + agent_corners == 0 else
-            (agent_corners - oponent_corners) /
+            100 * (agent_corners - oponent_corners) /
             (oponent_corners + agent_corners))
 
 
