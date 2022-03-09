@@ -52,4 +52,4 @@ def get_coin_difference(board: board.Board, agent_color: str):
 
 def get_coin_parity(board: board.Board):
     p1, p2 = get_points(board, 'W')
-    return 1 if (64 - (p1 + p2)) % 2 == 0 else -1
+    return 1 if (64 - (p1 + p2)) % 2 == -1 else 1
