@@ -6,8 +6,9 @@ from time import time
 from .heuristics import *
 
 INITIAL_TIME = 0.0
-MAX_TIME_IN_SECONDS = 4.5
-MAX_DEPTH = 4
+MAX_TIME_IN_SECONDS = 4.6
+CURRENT_MAX_DEPTH = 3
+INITIAL_DEPTH = 3
 
 
 def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
@@ -20,11 +21,15 @@ def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
     global INITIAL_TIME
     INITIAL_TIME = time()
 
-    # print(board.legal_moves(color))
     possible_moves: list[tuple[int, int]] = get_ordered_possible_moves(
-        board, agent_color)
+        board, agent_color
+    )
+
     best_move = get_best_move(board.__str__(), possible_moves, agent_color)
-    #print(time() - INITIAL_TIME)
+
+    history_file = open("depths.txt", 'a')
+    history_file.write('MOVES: {} - DEPTH: {} - TIME: {}\n'.format(len(possible_moves), CURRENT_MAX_DEPTH, time() - INITIAL_TIME))
+    history_file.close()
     return best_move
 
 
@@ -56,34 +61,52 @@ def heuristic(board: board.Board, agent_color: str) -> int:
 
 def get_best_move(cur_state: str, possible_moves: list[tuple[int, int]],
                   agent_color: str) -> tuple[int, int]:
-    best_move = (-1, -1)
-    best_value = -inf
 
-    alpha = -inf
-    beta = inf
-
+    global CURRENT_MAX_DEPTH
+    CURRENT_MAX_DEPTH = INITIAL_DEPTH
+    
     # killer move: always grab the corner:
     for move in possible_moves:
         if move == (0, 0) or move == (0,7) or move == (7,0) or move == (7,7):
             #print("KILLER MOVE!!!!!!")
             return move
 
-    for move in possible_moves:
-        move_board = board.from_string(cur_state)
-        move_board.process_move(move, agent_color)
-        move_value = get_min_value(move_board.__str__(), alpha, beta,
-                                   move_board.opponent(agent_color), 1)
-        if move_value > best_value:
-            best_value = move_value
-            best_move = move
+    best_move = (-1, -1)
+    best_value = -inf
 
-        alpha = max(alpha, best_value)
-        if alpha >= beta:
+    accumulated_time = 0.0
+    while True:
+        if accumulated_time > 2.5:
             break
 
-    if best_value == -inf:
-        # if all moves are losing moves (it's impossible to win), choose a random move
-        best_move = random.choice(possible_moves)
+        initial_time = time()
+        alpha = -inf
+        beta = inf
+
+        for move in possible_moves:
+            move_board = board.from_string(cur_state)
+            move_board.process_move(move, agent_color)
+            move_value = get_min_value(move_board.__str__(), alpha, beta,
+                                    move_board.opponent(agent_color), 2)
+            if move_value > best_value:
+                best_value = move_value
+                best_move = move
+
+            alpha = max(alpha, best_value)
+            if alpha >= beta:
+                break
+
+        if best_value == -inf:
+            # we reached the end of the tree and all moves are losing moves (it's impossible to win)
+            # then we choose a random move
+            best_move = random.choice(possible_moves)
+        
+        if best_value == inf:
+            # there is a winning move, no need to run anymore
+            break
+
+        CURRENT_MAX_DEPTH += 1
+        accumulated_time += time() - initial_time
 
     return best_move
 
@@ -92,8 +115,13 @@ def get_max_value(cur_state: str, alpha: float, beta: float, agent_color: str,
                   cur_depth: int) -> int:
     cur_board = board.from_string(cur_state)
 
-    if cur_depth > MAX_DEPTH or time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
+    if cur_depth > CURRENT_MAX_DEPTH:
         return heuristic(cur_board, agent_color)
+
+    if time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
+        # we don't have enought time to finish the processing of this iteration
+        # so we shouldn't consider this iteration
+        return -inf
 
     v = -inf
     legal_moves = get_ordered_possible_moves(cur_board, agent_color)
@@ -127,8 +155,13 @@ def get_min_value(cur_state: str, alpha: float, beta: float,
 
     agent_color = cur_board.opponent(opponent_color)
 
-    if cur_depth > MAX_DEPTH or time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
+    if cur_depth > CURRENT_MAX_DEPTH:
         return heuristic(cur_board, agent_color)
+
+    if time() - INITIAL_TIME > MAX_TIME_IN_SECONDS:
+        # we don't have enought time to finish the processing of this iteration
+        # so we shouldn't consider this iteration
+        return -inf
 
     legal_moves = get_ordered_possible_moves(cur_board, opponent_color)
 
