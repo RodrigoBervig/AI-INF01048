@@ -38,7 +38,7 @@ def get_mobility(board: board.Board, agent_color: str) -> int:
 def get_potential_mobility(board: board.Board, agent_color: str) -> int:
 
     def valid_position(row, column):
-        return row >= 0 and row < 8 and column >= 0 and column < 8
+        return row >= 0 and row < 8 and column >= 0 and column < 8 and board.tiles[row][column] == '.'
 
     agent_adjacency = set()
     opponent_adjacency = set()
