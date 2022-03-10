@@ -7,7 +7,7 @@ from .heuristics import *
 
 INITIAL_TIME = 0.0
 MAX_TIME_IN_SECONDS = 4.5
-MAX_DEPTH = 8
+MAX_DEPTH = 4
 
 
 def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
@@ -46,12 +46,12 @@ def heuristic(board: board.Board, agent_color: str) -> int:
             return -inf  # loss
 
     total_points = points[0] + points[1]
-    if total_points <= 20:
-        return 1000 * get_corner(board, agent_color) + 50 * get_mobility(board, agent_color)
-    elif total_points <= 55:
-        return 1000 * get_corner(board, agent_color) + 20 * get_mobility(board, agent_color) + 10 * get_coin_difference(board, agent_color)
+    #if total_points <= 20:
+    #    return 1000 * get_corner(board, agent_color) + 50 * get_mobility(board, agent_color)
+    #elif total_points <= 55:
+    #    return 1000 * get_corner(board, agent_color) + 20 * get_mobility(board, agent_color) + 10 * get_coin_difference(board, agent_color)
 
-    return 1000 * get_corner(board, agent_color) + 100 * get_mobility(board, agent_color) + 500 * get_coin_difference(board, agent_color) + 500 * get_coin_parity(board)
+    return 30 * get_corner(board, agent_color) + 5 * get_mobility(board, agent_color) + 25 * get_coin_difference(board, agent_color) + 25 * get_coin_parity(board)
 
 
 def get_best_move(cur_state: str, possible_moves: list[tuple[int, int]],
