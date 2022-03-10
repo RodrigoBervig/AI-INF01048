@@ -1,5 +1,7 @@
 from math import inf
 import random
+import numpy as np
+
 from turtle import pos
 from ..othello import board
 from time import time
@@ -10,6 +12,16 @@ MAX_TIME_IN_SECONDS = 4.6
 CURRENT_MAX_DEPTH = 3
 INITIAL_DEPTH = 3
 
+position_values = np.matrix([
+[4, -3, 2, 2, 2, 2, -3, 4],
+[-3, -4, -1, -1, -1, -1, -4, -3],
+[2, -1, 1, 0, 0, 1, -1, 2],
+[2, -1, 0, 1, 1, 0, -1, 2],
+[2, -1, 0, 1, 1, 0, -1, 2],
+[2, -1, 1, 0, 0, 1, -1, 2],
+[-3, -4, -1, -1, -1, -1, -4, -3],
+[4, -3, 2, 2, 2, 2, -3, 4]
+])
 
 def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
     """
@@ -38,6 +50,12 @@ def get_ordered_possible_moves(board: board.Board,
 
     ordered_moves = board.legal_moves(color)
 
+    # trying to put best moves first:
+    def sort_funciton(move):
+        return position_values[move[1], move[0]]
+
+    ordered_moves.sort(key=sort_funciton)
+
     return ordered_moves
 
 
@@ -51,10 +69,6 @@ def heuristic(board: board.Board, agent_color: str) -> int:
             return -inf  # loss
 
     total_points = points[0] + points[1]
-    #if total_points <= 20:
-    #    return 1000 * get_corner(board, agent_color) + 50 * get_mobility(board, agent_color)
-    #elif total_points <= 55:
-    #    return 1000 * get_corner(board, agent_color) + 20 * get_mobility(board, agent_color) + 10 * get_coin_difference(board, agent_color)
 
     return 30 * get_corner(board, agent_color) + 5 * get_mobility(board, agent_color) + 25 * get_coin_difference(board, agent_color) + 25 * get_coin_parity(board)
 
