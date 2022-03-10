@@ -90,7 +90,7 @@ def get_best_move(cur_state: str, possible_moves: list[tuple[int, int]],
 
     accumulated_time = 0.0
     while True:
-        if accumulated_time > 2.5:
+        if accumulated_time > 3:
             break
 
         initial_time = time()
