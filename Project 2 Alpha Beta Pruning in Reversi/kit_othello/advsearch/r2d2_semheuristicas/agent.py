@@ -1,7 +1,5 @@
 from math import inf
 import random
-import numpy as np
-
 from turtle import pos
 from ..othello import board
 from time import time
@@ -11,17 +9,6 @@ INITIAL_TIME = 0.0
 MAX_TIME_IN_SECONDS = 4.6
 CURRENT_MAX_DEPTH = 3
 INITIAL_DEPTH = 3
-
-position_values = np.matrix([
-    [4, -3, 2, 2, 2, 2, -3, 4],
-    [-3, -4, -1, -1, -1, -1, -4, -3],
-    [2, -1, 1, 0, 0, 1, -1, 2],
-    [2, -1, 0, 1, 1, 0, -1, 2],
-    [2, -1, 0, 1, 1, 0, -1, 2],
-    [2, -1, 1, 0, 0, 1, -1, 2],
-    [-3, -4, -1, -1, -1, -1, -4, -3],
-    [4, -3, 2, 2, 2, 2, -3, 4]
-])
 
 
 def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
@@ -34,6 +21,11 @@ def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
     global INITIAL_TIME
     INITIAL_TIME = time()
 
+    x = int(input("coluna: "))
+    y = int(input("linha: "))
+
+    return (x, y)
+
     possible_moves: list[tuple[int, int]] = get_ordered_possible_moves(
         board, agent_color
     )
@@ -41,8 +33,7 @@ def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
     best_move = get_best_move(board.__str__(), possible_moves, agent_color)
 
     history_file = open("depths.txt", 'a')
-    history_file.write('MOVES: {} - DEPTH: {} - TIME: {}\n'.format(
-        len(possible_moves), CURRENT_MAX_DEPTH, time() - INITIAL_TIME))
+    history_file.write('MOVES: {} - DEPTH: {} - TIME: {}\n'.format(len(possible_moves), CURRENT_MAX_DEPTH, time() - INITIAL_TIME))
     history_file.close()
     return best_move
 
@@ -51,12 +42,6 @@ def get_ordered_possible_moves(board: board.Board,
                                color: str) -> list[tuple[int, int]]:
 
     ordered_moves = board.legal_moves(color)
-
-    # trying to put best moves first:
-    def sort_funciton(move):
-        return position_values[move[1], move[0]]
-
-    ordered_moves.sort(key=sort_funciton)
 
     return ordered_moves
 
@@ -70,14 +55,7 @@ def heuristic(board: board.Board, agent_color: str) -> int:
         elif points[0] < points[1]:
             return -inf  # loss
 
-    total_points = points[0] + points[1]
-
-    if total_points <= 20: # "early game"
-        return 5 * get_corner(board, agent_color) + 25 * get_mobility(board, agent_color) + 25 * get_potential_mobility(board, agent_color)
-    if total_points <= 50: # "middle game"
-        return 30 * get_corner(board, agent_color) + 20 * get_mobility(board, agent_color) + 20 * get_potential_mobility(board, agent_color) + 25 * get_coin_difference(board, agent_color) + 5 * get_coin_parity(board)
-    # "end game"
-    return 30 * get_corner(board, agent_color) + 15 * get_mobility(board, agent_color) + 15 * get_mobility(board, agent_color)  + 25 * get_coin_difference(board, agent_color) + 25 * get_coin_parity(board)
+    return points[0]
 
 
 def get_best_move(cur_state: str, possible_moves: list[tuple[int, int]],
@@ -85,10 +63,10 @@ def get_best_move(cur_state: str, possible_moves: list[tuple[int, int]],
 
     global CURRENT_MAX_DEPTH
     CURRENT_MAX_DEPTH = INITIAL_DEPTH
-
+    
     # killer move: always grab the corner:
     for move in possible_moves:
-        if move == (0, 0) or move == (0, 7) or move == (7, 0) or move == (7, 7):
+        if move == (0, 0) or move == (0,7) or move == (7,0) or move == (7,7):
             #print("KILLER MOVE!!!!!!")
             return move
 
@@ -97,7 +75,7 @@ def get_best_move(cur_state: str, possible_moves: list[tuple[int, int]],
 
     accumulated_time = 0.0
     while True:
-        if accumulated_time > 3:
+        if accumulated_time > 2.5:
             break
 
         initial_time = time()
@@ -108,7 +86,7 @@ def get_best_move(cur_state: str, possible_moves: list[tuple[int, int]],
             move_board = board.from_string(cur_state)
             move_board.process_move(move, agent_color)
             move_value = get_min_value(move_board.__str__(), alpha, beta,
-                                       move_board.opponent(agent_color), 2)
+                                    move_board.opponent(agent_color), 2)
             if move_value > best_value:
                 best_value = move_value
                 best_move = move
@@ -121,7 +99,7 @@ def get_best_move(cur_state: str, possible_moves: list[tuple[int, int]],
             # we reached the end of the tree and all moves are losing moves (it's impossible to win)
             # then we choose a random move
             best_move = random.choice(possible_moves)
-
+        
         if best_value == inf:
             # there is a winning move, no need to run anymore
             break
