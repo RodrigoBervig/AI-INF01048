@@ -1,4 +1,8 @@
+from pyparsing import col
 from ..othello import board
+
+rmovs = [-1, -1, -1, 0, 1, 1, 1, 0]
+cmovs = [-1, 0, 1, 1, 1, 0, -1, -1]
 
 
 def get_corner(board: board.Board, agent_color: str) -> int:
@@ -29,6 +33,34 @@ def get_mobility(board: board.Board, agent_color: str) -> int:
         mobility = 0
 
     return mobility
+
+
+def get_potential_mobility(board: board.Board, agent_color: str) -> int:
+
+    def valid_position(row, column):
+        return row >= 0 and row < 8 and column >= 0 and column < 8
+
+    agent_adjacency = set()
+    opponent_adjacency = set()
+
+    for i in range(0, 8):
+        for j in range(0, 8):
+            if board.tiles[i][j] == '.':
+                continue
+            for k in range(0, 8):
+                if valid_position(i + rmovs[k], j + cmovs[k]):
+                    if board.tiles[i][j] == agent_color:
+                        agent_adjacency.add((i, j))
+                    else:
+                        opponent_adjacency.add((i, j))
+
+    agent_potential = len(agent_adjacency)
+    opponent_potential = len(opponent_adjacency)
+
+    if agent_potential + opponent_potential == 0:
+        return 0
+
+    return 100 * (agent_potential - opponent_potential) / (agent_potential + opponent_potential)
 
 
 def get_points(board: board.Board, agent_color: str) -> tuple[int, int]:
