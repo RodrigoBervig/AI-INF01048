@@ -6,6 +6,7 @@ from turtle import pos
 from ..othello import board
 from time import time
 from .heuristics import *
+from .openings import OpeningBook
 
 INITIAL_TIME = 0.0
 MAX_TIME_IN_SECONDS = 4.6
@@ -38,6 +39,13 @@ def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
 
     AGENT_COLOR = agent_color
     OPPONENT_COLOR = board.opponent(agent_color)
+
+    book = OpeningBook(board, agent_color)
+    move = book.get_next_move()
+    if move is not None:
+        print("got this move from the opening")
+        return move
+
 
     possible_moves = get_ordered_possible_moves(board, agent_color)
 
