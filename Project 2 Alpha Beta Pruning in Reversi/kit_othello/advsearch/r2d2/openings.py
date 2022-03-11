@@ -145,8 +145,8 @@ class OpeningBook:
             self.write_move_to_history(
                 oponent_last_move_notation[0], oponent_last_move_notation[1])
 
-            history += oponent_last_move_notation[0]
-            history += oponent_last_move_notation[1]
+            self.history += oponent_last_move_notation[0]
+            self.history += oponent_last_move_notation[1]
 
     def move_to_notation(self, column: int, row: int, index: int) -> str:
         black_columns = ["A", "B", "C", "D", "E", "F", "G", "H"]
@@ -183,7 +183,7 @@ class OpeningBook:
 
         for opening in openings:
             if self.is_prefix(self.history, opening):
-                continuations.append[opening]
+                continuations.append(opening)
 
         if len(continuations):
             opening = random.choice(continuations)
