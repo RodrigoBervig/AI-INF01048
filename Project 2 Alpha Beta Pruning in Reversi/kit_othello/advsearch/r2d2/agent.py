@@ -41,6 +41,9 @@ def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
 
     possible_moves = get_ordered_possible_moves(board, agent_color)
 
+    if len(possible_moves) == 0:
+        return (-1, -1)
+
     best_move = get_best_move(board.__str__(), possible_moves)
 
     history_file = open("depths.txt", 'a')
