@@ -58,7 +58,7 @@ def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
 
 # trying to put best moves first:
 def sort_funciton(move):
-    return position_values[move[1], move[0]]
+    return -position_values[move[1], move[0]]
 
 def get_ordered_possible_moves(board: board.Board,
                                color: str) -> list[tuple[int, int]]:
