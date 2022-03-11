@@ -4,8 +4,8 @@ Fernando Zanutto | 00302340 | A
 Gabriel Fagundes da Fonseca | 00301151 | A
 Rodrigo Bervig Rocha | 00301709 | A
 
-#Implementação:
-# Interative Deepening:
+# Implementação:
+# Iterative Deepening:
 	Implementamos Interative Deepening rodando inicialmente com profundidade máxima 3, e incrementando em 1 a cada iteração. Considerando também o limite de tempo
 
 # Heurísticas:
@@ -32,7 +32,7 @@ Rodrigo Bervig Rocha | 00301709 | A
 	else
 		return 0
 
-#Fontes:
+# Fontes:
 https://www.ffothello.org/livres/othello-book-Brian-Rose.pdf
 http://home.datacomm.ch/t_wolf/tw/misc/reversi/html/index.html
 https://www.ultraboardgames.com/othello/opening-moves.php
