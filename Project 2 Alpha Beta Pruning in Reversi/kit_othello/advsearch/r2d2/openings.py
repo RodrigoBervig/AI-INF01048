@@ -85,6 +85,7 @@ openings = [
     "C4c3"
 ]
 
+
 class OpeningBook:
 
     def __init__(self, board: board.Board, agent_color: str):
@@ -97,6 +98,7 @@ class OpeningBook:
 
         p1, p2 = self.get_points_from_board(board, agent_color)
 
+        # create file if it does not exist yet
         file = open(self.history_file, 'a+')
         file.close()
 
@@ -110,10 +112,12 @@ class OpeningBook:
         file.close()
 
         if len(self.history):  # then we know that our oponent has to have made a move last time
+            # L means that we know we are not in the opening anymore
             if self.history[-1] == 'L':
                 self.opening_is_over = True
                 return
 
+            # fills the board untill the last move made by our agent
             for i in range(0, len(self.history), 2):
                 column, row = self.notation_to_move(
                     self.history[i], self.history[i+1])
@@ -122,6 +126,7 @@ class OpeningBook:
             oponent_last_move = (-1, -1)
             oponent_index = 1 if agent_color == 'B' else 0
 
+            # finds out what was the move made by our oponent last time by checking the difference between boards
             found = False
             for i in range(0, 8):
                 for j in range(0, 8):
@@ -136,15 +141,12 @@ class OpeningBook:
             oponent_last_move_notation = self.move_to_notation(
                 oponent_last_move[0], oponent_last_move[1], oponent_index)
 
+            # add to our history the oponent move
             self.write_move_to_history(
                 oponent_last_move_notation[0], oponent_last_move_notation[1])
-            
-            file = open(self.history_file, 'r+')
-            self.history = file.read()
-            file.close()
-            
 
-            
+            history += oponent_last_move_notation[0]
+            history += oponent_last_move_notation[1]
 
     def move_to_notation(self, column: int, row: int, index: int) -> str:
         black_columns = ["A", "B", "C", "D", "E", "F", "G", "H"]
@@ -177,11 +179,17 @@ class OpeningBook:
             self.write_move_to_history(move[0], move[1])
             return self.notation_to_move(move[0], move[1])
 
+        continuations = []
+
         for opening in openings:
             if self.is_prefix(self.history, opening):
-                self.write_move_to_history(
-                    opening[len(self.history)], opening[len(self.history) + 1])
-                return self.notation_to_move(opening[len(self.history)], opening[len(self.history) + 1])
+                continuations.append[opening]
+
+        if len(continuations):
+            opening = random.choice(continuations)
+            self.write_move_to_history(
+                opening[len(self.history)], opening[len(self.history) + 1])
+            return self.notation_to_move(opening[len(self.history)], opening[len(self.history) + 1])
 
         self.write_move_to_history('L', 'L')
 
@@ -189,7 +197,7 @@ class OpeningBook:
         if len(s) >= len(w):
             return False
 
-        for i in range(0,len(s)):
+        for i in range(0, len(s)):
             if s[i] != w[i]:
                 return False
 
