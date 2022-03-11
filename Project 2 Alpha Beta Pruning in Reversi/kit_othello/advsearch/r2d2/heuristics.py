@@ -1,4 +1,3 @@
-from pyparsing import col
 from ..othello import board
 
 rmovs = [-1, -1, -1, 0, 1, 1, 1, 0]

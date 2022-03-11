@@ -3,9 +3,29 @@ import unittest
 import advsearch.othello.board as board
 import advsearch.timer as timer
 import advsearch.r2d2.agent as agent  # change your_agent by the name of your agent module
+import advsearch.r2d2.heuristics as heuristics
 
 
 class TestAgent(unittest.TestCase):
+
+    def test_heuristics_get_points(self):
+        """
+        """
+        b = board.from_string(
+"""WWWWWWWW
+WWWWWWWW
+WWWWWWWW
+WWWWWWWW
+WWWBWWWW
+WWWWWWWW
+WWWWWWWW
+WWWWWWW."""
+        )
+        
+        value = heuristics.get_points(b, 'W')
+        self.assertEqual(value, (63, 1))
+        
+
     def test_initial_state(self):
         """
         If your test fails here, your agent is returning

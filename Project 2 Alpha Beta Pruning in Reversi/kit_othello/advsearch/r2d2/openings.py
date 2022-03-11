@@ -1,5 +1,4 @@
 import random
-from readline import write_history_file
 from ..othello import board
 
 
