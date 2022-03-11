@@ -1,8 +1,6 @@
 from math import inf
-import random
 import numpy as np
 
-from turtle import pos
 from ..othello import board
 from time import time
 from .heuristics import *
@@ -54,10 +52,6 @@ def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
 
     best_move = get_best_move(board.__str__(), possible_moves)
 
-    history_file = open("depths.txt", 'a')
-    history_file.write('MOVES: {} - DEPTH: {} - TIME: {}\n'.format(
-        len(possible_moves), CURRENT_MAX_DEPTH, time() - INITIAL_TIME))
-    history_file.close()
     return best_move
 
 
