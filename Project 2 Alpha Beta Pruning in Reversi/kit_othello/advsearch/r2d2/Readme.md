@@ -9,7 +9,7 @@ Rodrigo Bervig Rocha | 00301709 | A
 # Condições de parada:
 	Limitamos o tempo de processamento em 4.6 segundos para dar uma margem segura dos 5 segundos limite. Outra condição de parada é a profundidade máxima do Iterative Deepening.
 # Alpha Beta prunning - Iterative Deepening:
-	Implementamos o Iterative Deepening rodando inicialmente com profundidade máxima 3, e incrementando em 1 a cada iteração. 
+	Implementamos o Iterative Deepening rodando inicialmente com profundidade máxima 3, e incrementando em 1 a cada iteração. Também ordenamos os movimentos possíveis a partir de pesos estáticos para cada posição, afim de minimizar o número de nodos expandidos.
 
 # Heurísticas:
 	Foram utilzadas heurísticas baseadas no artigo An Analysis of Heuristics in Othello, de V. Sannidhanam e M. Annamalai. Elas são utilizadas toda vez que o algoritmo alcança um estado terminal, ou quando avaliação chega na profundidade máxima definida pela constante CURRENT_MAX_DEPTH
