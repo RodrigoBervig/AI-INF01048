@@ -15,6 +15,7 @@ Rodrigo Bervig Rocha | 00301709 | A
 ## Mobility:
 	A heurística Mobility parte da ideia de maximizar a mobilidade do player e restringir a mobilidade do oponente, de forma a diminuir as oportunidades dele colocar peças que possibilitem o aumento de controle na região. A mobilidade atual é calculada examinando o tabuleiro e contando o número de movimentos legais para o player.
 	100 * (PlayerPossibleMoves - OponentPossibleMoves)/(PlayerPossibleMoves + OponenetPossibleMoves)
+	Além de mobilidade, calculamos a mobilidade potencial, que mede no logo prazo qual será a mobilidade de cada jogador, essa heurística é calculada a partir do número de células adjacentes em branco as peças de um jogador, o calculo se dá da mesma maneira
 
 ## Corners Captured:
 	A heurística Corners Captured utiliza do princípio que os cantos do tabuleiro no jogo othello são posições fortes, pois uma vez capturados eles não podem ser recapturados pelo adversário. Corners Captured é calculado examinando os cantos e contando quantos cantos o player possui e quantos cantos o openente possui. A diferença dos dois é dividida pela soma dos cantos capturados e multiplicada por 100.
