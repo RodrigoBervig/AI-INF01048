@@ -23,16 +23,17 @@ class OpeningBook:
 
         file = open(self.history_file, 'r+')
 
-        if p1 + p2 == 4:  # we know the game is starting now, therefore we must erase the file from any previous game
+        if p1 + p2 == 4 or (p1+p2 == 5 and agent_color == 'W'):  
+            # we know the game is starting now, therefore we must erase the file from any previous game
             file.truncate(0)
         else:
             self.history = file.read()
 
         file.close()
 
-        if len(self.history):  # then we know that our oponent has to have made a move last time
+        if len(self.history) or agent_color == 'W':  # then we know that our oponent has to have made a move last time
             # L means that we know we are not in the opening anymore
-            if self.history[-1] == 'L':
+            if len(self.history) and self.history[-1] == 'L':
                 self.opening_is_over = True
                 return
 
@@ -76,8 +77,7 @@ class OpeningBook:
         return notation_string
 
     def notation_to_move(self, c: str, r: str) -> tuple[int, int]:
-        columns = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F": 5, "G": 6, "H": 7,
-                   "a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
+        columns = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "g": 6, "h": 7}
 
         return (columns[c], int(r)-1)
 
