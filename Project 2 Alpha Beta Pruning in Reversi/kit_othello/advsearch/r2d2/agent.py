@@ -96,53 +96,50 @@ def heuristic(board: board.Board) -> int:
 
 
 def get_best_move(cur_state: str, possible_moves: list[tuple[int, int]]) -> tuple[int, int]:
-    global CURRENT_MAX_DEPTH
+    global CURRENT_MAX_DEPTH, INITIAL_TIME
     CURRENT_MAX_DEPTH = INITIAL_DEPTH
-
-    # killer move: always grab the corner:
-    for move in possible_moves:
-        if move == (0, 0) or move == (0, 7) or move == (7, 0) or move == (7, 7):
-            #print("KILLER MOVE!!!!!!")
-            return move
 
     best_move = (-1, -1)
     best_value = -inf
 
     accumulated_time = 0.0
+
+    alpha = -inf
+    beta = inf
+
     while True:
         if accumulated_time > 3:
             break
 
         initial_time = time()
-        alpha = -inf
-        beta = inf
+
+        best_local_value = -inf
+        best_local_move = (-1,-1)
 
         for move in possible_moves:
             move_board = board.from_string(cur_state)
             move_board.process_move(move, AGENT_COLOR)
             move_value = get_min_value(move_board.__str__(), alpha, beta, 2)
-            if move_value > best_value:
-                best_value = move_value
-                best_move = move
+            if move_value > best_local_value:
+                best_local_value = move_value
+                best_local_move = move
 
-            alpha = max(alpha, best_value)
-            if alpha >= beta:
-                break
+            if best_local_value == inf:
+                # we found a winning move
+                return best_local_move
 
-        if best_value == -inf:
-            # we reached the end of the tree and all moves are losing moves (it's impossible to win)
-            # then we choose a random move
-            best_move = random.choice(possible_moves)
-
-        if best_value == inf:
-            # there is a winning move, no need to run anymore
-            break
+        if time() - INITIAL_TIME < MAX_TIME_IN_SECONDS:
+            # if the condition if true, we are sure all the search was completed
+            best_value = best_local_value
+            best_move = best_local_move
 
         CURRENT_MAX_DEPTH += 1
         accumulated_time += time() - initial_time
-
-    return best_move
-
+    
+    if best_value > -inf:
+        return best_move
+    else:
+        return position_values[0]
 
 def get_max_value(cur_state: str, alpha: float, beta: float, cur_depth: int) -> int:
     cur_board = board.from_string(cur_state)
