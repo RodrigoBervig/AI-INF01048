@@ -40,15 +40,15 @@ def make_move(board: board.Board, agent_color: str) -> tuple[int, int]:
     AGENT_COLOR = agent_color
     OPPONENT_COLOR = board.opponent(agent_color)
 
+    possible_moves = get_ordered_possible_moves(board, agent_color)
+
     book = OpeningBook(board, agent_color)
     move = book.get_next_move()
     if move is not None:
         print("got this move from the opening")
-        return move
-
-
-    possible_moves = get_ordered_possible_moves(board, agent_color)
-
+        if move in possible_moves:
+            return move
+    
     if len(possible_moves) == 0:
         return (-1, -1)
 
