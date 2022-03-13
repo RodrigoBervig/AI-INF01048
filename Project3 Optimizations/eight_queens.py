@@ -1,4 +1,7 @@
-def evaluate(individual):
+from random import random
+from random import choice
+
+def evaluate(individual: list[int]):
     """
     Recebe um indivíduo (lista de inteiros) e retorna o número de ataques
     entre rainhas na configuração especificada pelo indivíduo.
@@ -7,20 +10,46 @@ def evaluate(individual):
     :param individual:list
     :return:int numero de ataques entre rainhas no individuo recebido
     """
-    raise NotImplementedError  # substituir pelo seu codigo
+
+    total_attacks = 0
+
+    for queen_column in range(8):
+        queen_line = individual[queen_column]
+
+        for other_column, other_line in enumerate(individual):
+            if queen_column == other_column:
+                continue
+
+            if queen_line == other_line:
+                total_attacks += 1
+                continue
+
+            column_diff = queen_column - other_column
+            line_diff = queen_line - other_line
+            if abs(column_diff) == abs(line_diff):
+                total_attacks += 1
+                continue
+
+    return total_attacks // 2
+            
+    
+def sort_function(participant: list[int]):
+    return evaluate(participant)
 
 
-def tournament(participants):
+def tournament(participants: list[list[int]]):
     """
     Recebe uma lista com vários indivíduos e retorna o melhor deles, com relação
     ao numero de conflitos
     :param participants:list - lista de individuos
     :return:list melhor individuo da lista recebida
     """
-    raise NotImplementedError  # substituir pelo seu codigo
+    participants.sort(key = sort_function)
+
+    return participants[0]
 
 
-def crossover(parent1, parent2, index):
+def crossover(parent1: list[int], parent2: list[int], index: int):
     """
     Realiza o crossover de um ponto: recebe dois indivíduos e o ponto de
     cruzamento (indice) a partir do qual os genes serão trocados. Retorna os
@@ -34,10 +63,11 @@ def crossover(parent1, parent2, index):
     :param index:int
     :return:list,list
     """
-    raise NotImplementedError  # substituir pelo seu codigo
+    
 
+    return parent1[0:index] + parent2[index:], parent2[0:index] + parent1[index:]
 
-def mutate(individual, m):
+def mutate(individual: list[int], m: float):
     """
     Recebe um indivíduo e a probabilidade de mutação (m).
     Caso random() < m, sorteia uma posição aleatória do indivíduo e
@@ -46,10 +76,16 @@ def mutate(individual, m):
     :param m:int - probabilidade de mutacao
     :return:list - individuo apos mutacao (ou intacto, caso a prob. de mutacao nao seja satisfeita)
     """
-    raise NotImplementedError  # substituir pelo seu codigo
+
+    if random() < m:
+        index = choice(range(8))
+
+        individual[index] = choice(range(8))
+
+    return individual
 
 
-def run_ga(g, n, k, m, e):
+def run_ga(g: int, n: int, k: int, m: float, e: bool):
     """
     Executa o algoritmo genético e retorna o indivíduo com o menor número de ataques entre rainhas
     :param g:int - numero de gerações
