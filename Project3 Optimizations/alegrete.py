@@ -26,7 +26,18 @@ def step_gradient(theta_0, theta_1, data, alpha):
     :param alpha: float - taxa de aprendizado (a.k.a. tamanho do passo)
     :return: float,float - os novos valores de theta_0 e theta_1, respectivamente
     """
-    raise NotImplementedError  # substituir pelo seu codigo
+    derivTheta_0 = 0.0
+    derivTheta_1 = 0.0
+    for dt in data:
+        derivTheta_0 += (theta_0 + theta_1*dt[0])-dt[1]
+        derivTheta_1 += ((theta_0 + theta_1*dt[0])-dt[1]) * dt[0]
+
+    derivTheta_0 *= 2/len(data)
+    derivTheta_1 *= 2/len(data)
+
+    newTheta_0 = theta_0 - alpha*derivTheta_0
+    newTheta_1 = theta_1 - alpha*derivTheta_1
+    return newTheta_0,newTheta_1
 
 
 def fit(data, theta_0, theta_1, alpha, num_iterations):
@@ -48,4 +59,11 @@ def fit(data, theta_0, theta_1, alpha, num_iterations):
 
 if __name__ == "__main__":
         data = np.genfromtxt('alegrete.csv', delimiter=',')
+        print(step_gradient(1, 1, np.array([
+            [1, 3],
+            [2, 4],
+            [3, 4],
+            [4, 2]
+        ])
+, alpha=0.1))
         print(compute_mse(0,0,data))
