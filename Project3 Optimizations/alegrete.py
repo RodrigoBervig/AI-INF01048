@@ -55,8 +55,18 @@ def fit(data, theta_0, theta_1, alpha, num_iterations):
     :param num_iterations: int - numero de épocas/iterações para executar a descida de gradiente
     :return: list,list - uma lista com os theta_0 e outra com os theta_1 obtidos ao longo da execução
     """
-    raise NotImplementedError  # substituir pelo seu codigo
+    newTheta_0 = theta_0
+    newTheta_1 = theta_1
+    listTheta_0 = [theta_0]
+    listTheta_1 = [theta_1]
+    for i in range(num_iterations):
+        newTheta_0, newTheta_1 = step_gradient(newTheta_0, newTheta_1, data, alpha)
+        listTheta_0.append(newTheta_0)
+        listTheta_1.append(newTheta_1)
 
+    return listTheta_0, listTheta_1
+
+'''
 if __name__ == "__main__":
         data = np.genfromtxt('alegrete.csv', delimiter=',')
         print(step_gradient(1, 1, np.array([
@@ -67,3 +77,6 @@ if __name__ == "__main__":
         ])
 , alpha=0.1))
         print(compute_mse(0,0,data))
+        theta_0,theta_1 = fit(data, 0, 0, 0.1, 10)
+        print(theta_0,theta_1)
+'''
