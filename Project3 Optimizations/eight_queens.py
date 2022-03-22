@@ -1,5 +1,4 @@
-from random import random
-from random import choice
+from random import random, choice, choices
 
 def evaluate(individual: list[int]):
     """
@@ -44,9 +43,9 @@ def tournament(participants: list[list[int]]):
     :param participants:list - lista de individuos
     :return:list melhor individuo da lista recebida
     """
-    participants.sort(key = sort_function)
+    sorted_participants = sorted(participants, key = sort_function)
 
-    return participants[0]
+    return sorted_participants[0]
 
 
 def crossover(parent1: list[int], parent2: list[int], index: int):
@@ -64,8 +63,8 @@ def crossover(parent1: list[int], parent2: list[int], index: int):
     :return:list,list
     """
     
-
     return parent1[0:index] + parent2[index:], parent2[0:index] + parent1[index:]
+
 
 def mutate(individual: list[int], m: float):
     """
@@ -84,7 +83,11 @@ def mutate(individual: list[int], m: float):
 
     return individual
 
+def selection(participants, k):
+    sorted_participants = sorted(choices(participants, k = k), key = sort_function)
 
+    return sorted_participants[0], sorted_participants[1]
+    
 def run_ga(g: int, n: int, k: int, m: float, e: bool):
     """
     Executa o algoritmo genético e retorna o indivíduo com o menor número de ataques entre rainhas
@@ -95,4 +98,25 @@ def run_ga(g: int, n: int, k: int, m: float, e: bool):
     :param e:bool - se vai haver elitismo
     :return:list - melhor individuo encontrado
     """
-    raise NotImplementedError  # substituir pelo seu codigo
+
+    population = []
+    for _ in range(n):
+        population.append([choice(range(8)) for _ in range(8)])
+    
+    for _ in range(g):
+        pop2 = []
+        if e:
+            pop2.append(tournament(population))
+
+        while len(pop2) < n:
+            p1, p2 = selection(population, k)
+            o1, o2 = crossover(p1, p2, choice(range(8)))
+            o1 = mutate(o1, m)
+            o2 = mutate(o2, m)
+            
+            pop2.append(o1)
+            pop2.append(o2)
+        
+        population = pop2
+
+    return tournament(population)
