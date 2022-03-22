@@ -9,7 +9,12 @@ def compute_mse(theta_0, theta_1, data):
     :param data: np.array - matriz com o conjunto de dados, x na coluna 0 e y na coluna 1
     :return: float - o erro quadratico medio
     """
-    raise NotImplementedError  # substituir pelo seu codigo
+    mse = 0.0
+    for dt in data:
+        mse += ((theta_0 + theta_1*dt[0]) - dt[1]) ** 2
+
+    mse /= len(data)
+    return mse
 
 
 def step_gradient(theta_0, theta_1, data, alpha):
@@ -40,3 +45,7 @@ def fit(data, theta_0, theta_1, alpha, num_iterations):
     :return: list,list - uma lista com os theta_0 e outra com os theta_1 obtidos ao longo da execução
     """
     raise NotImplementedError  # substituir pelo seu codigo
+
+if __name__ == "__main__":
+        data = np.genfromtxt('alegrete.csv', delimiter=',')
+        print(compute_mse(0,0,data))
