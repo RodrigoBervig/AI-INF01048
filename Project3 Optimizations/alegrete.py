@@ -65,18 +65,3 @@ def fit(data, theta_0, theta_1, alpha, num_iterations):
         listTheta_1.append(newTheta_1)
 
     return listTheta_0, listTheta_1
-
-'''
-if __name__ == "__main__":
-        data = np.genfromtxt('alegrete.csv', delimiter=',')
-        print(step_gradient(1, 1, np.array([
-            [1, 3],
-            [2, 4],
-            [3, 4],
-            [4, 2]
-        ])
-, alpha=0.1))
-        print(compute_mse(0,0,data))
-        theta_0,theta_1 = fit(data, 0, 0, 0.1, 10)
-        print(theta_0,theta_1)
-'''
