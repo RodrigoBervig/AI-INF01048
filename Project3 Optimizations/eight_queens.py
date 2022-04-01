@@ -1,4 +1,5 @@
 from random import random, choice, choices
+#import matplotlib.pyplot as plt
 
 def evaluate(individual: list[int]):
     """
@@ -103,6 +104,7 @@ def run_ga(g: int, n: int, k: int, m: float, e: bool):
     for _ in range(n):
         population.append([choice(range(8)) for _ in range(8)])
     
+    graph_value = [get_graph_values(population)]
     for _ in range(g):
         pop2 = []
         if e:
@@ -118,5 +120,39 @@ def run_ga(g: int, n: int, k: int, m: float, e: bool):
             pop2.append(o2)
         
         population = pop2
+        graph_value.append(get_graph_values(population))
 
+    # best_values = list(map(lambda x: x[0], graph_value))
+    # worst_values = list(map(lambda x: x[1], graph_value))
+    # mean_values = list(map(lambda x: x[2], graph_value))
+
+    # y = [i for i in range(0, g+1)]
+    
+    # fig, ax = plt.subplots()
+
+    # ax.set_xlabel("Gerações")
+    # ax.set_ylabel("Fitness")
+    # ax.set_ylim(0, 32)
+    # ax.set_xlim(0, g)
+    # ax.plot(y, best_values, label="Min Fitness")
+    # ax.plot(y, worst_values, label="Max Fitness")
+    # ax.plot(y, mean_values, label="Avg Fitness")
+    # ax.legend()
+    # ax.grid()
+    # fig.savefig("plot.png")
     return tournament(population)
+
+
+def get_graph_values(population):
+    values = list(map(evaluate, population))
+    values.sort()
+    
+    best = values[0]
+    worst = values[-1]
+    mean = sum(values) / len(values)
+
+    return best, worst, mean
+
+
+if __name__ == '__main__':
+    run_ga(30, 50, 10, 0.4, True)

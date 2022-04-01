@@ -76,7 +76,7 @@ class TestEightQueens(unittest.TestCase):
     def test_run_ga_correct(self):
         response = timer.timeout(
             eight_queens.run_ga,
-            args=(1000, 40, 4, 0.3, True),
+            args=(40, 50, 10, 0.4, True),
             time_limit=60, default='timeout'
         )
         print(response)
