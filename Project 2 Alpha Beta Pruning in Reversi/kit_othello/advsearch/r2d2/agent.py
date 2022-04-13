@@ -133,7 +133,7 @@ def get_best_move(cur_state: str, possible_moves: list[tuple[int, int]]) -> tupl
     if best_value > -inf:
         return best_move
     else:
-        return position_values[0]
+        return possible_moves[0]
 
 def get_max_value(cur_state: str, alpha: float, beta: float, cur_depth: int) -> int:
     cur_board = board.from_string(cur_state)
