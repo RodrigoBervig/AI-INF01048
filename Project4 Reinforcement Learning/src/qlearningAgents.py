@@ -67,7 +67,7 @@ class QLearningAgent(ReinforcementAgent):
           terminal state, you should return a value of 0.0.
         """
         "*** YOUR CODE HERE ***"
-        possibleActions = self.getLegalActions(state);
+        possibleActions = self.getLegalActions(state)
         if len(possibleActions) == 0:
             return 0.0
         else:
@@ -84,18 +84,23 @@ class QLearningAgent(ReinforcementAgent):
         """
         "*** YOUR CODE HERE ***"
         
-        possibleActions = self.getLegalActions(state);
+        possibleActions = self.getLegalActions(state)
+        
         if len(possibleActions) == 0:
             return None
         else:
-            bestActionValue = -1e9
-            bestAction = None
-            for action in possibleActions:
-                if self.getQValue(state,action) > bestActionValue:
-                    bestActionValue = self.getQValue(state,action)
-                    bestAction = action
+            actionsQValue = [(self.getQValue(state, action), action) for action in possibleActions]
+            actionsQValue.sort(reverse=True)
 
-            return bestAction
+            best_action_value = actionsQValue[0][0]
+            
+            best_actions = []
+            for i in range(len(actionsQValue)):
+                if actionsQValue[i][0] != best_action_value:
+                    break
+                best_actions.append(actionsQValue[i][1])
+            
+            return random.choice(best_actions)
 
     def getAction(self, state):
         """
