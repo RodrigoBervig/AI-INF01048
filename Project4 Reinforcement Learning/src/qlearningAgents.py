@@ -115,6 +115,7 @@ class QLearningAgent(ReinforcementAgent):
         if len(legalActions) == 0:
             return None
 
+        #Q5 is just implement this
         if util.flipCoin(self.epsilon): #Action aleatoria
             action = random.choice(legalActions)
         else: #melhor action
