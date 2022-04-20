@@ -51,7 +51,7 @@ class ValueIterationAgent(ValueEstimationAgent):
                 if self.mdp.isTerminal(state):
                     continue
                 else:
-                    q_value = -1e9
+                    q_value = self.computeQValueFromValues(state,self.mdp.getPossibleActions(state)[0])
                     for action in self.mdp.getPossibleActions(state):
                         q_value = max(q_value,self.computeQValueFromValues(state,action))
                     values[state] = q_value
